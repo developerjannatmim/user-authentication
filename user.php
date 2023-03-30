@@ -1,5 +1,10 @@
 <?php
 
+$conn = new mysqli('localhost','root','','userauthentication');
+if(!$conn){
+    die("Database Connection Failed");
+}
+
 $empmsg_firstname = '';
 $empmsg_lastname = '';
 $empmsg_email = '';
@@ -12,6 +17,8 @@ if (isset($_POST['submit'])) {
     $user_email = $_POST['user_email'];
     $user_password = $_POST['user_password'];
     $user_reset_password = $_POST['user_reset_password'];
+
+    $md5_user_password = md5($user_password);
 
     if(empty($user_first_name)){
         $empmsg_firstname = "Fill up this field";
@@ -32,6 +39,22 @@ if (isset($_POST['submit'])) {
     if(empty($user_reset_password)){
         $empmsg_resetpassword = "Fill up this field";
     }
+
+    if( !empty($user_first_name) && !empty($user_last_name) && !empty($user_email) && !empty($user_password) && !empty($user_reset_password) ){
+      if( $user_password === $user_reset_password ){
+        $sql = "INSERT INTO users(user_first_name, user_last_name, user_email, user_password) VALUE('$user_first_name','$user_last_name','$user_email','$md5_user_password')";
+
+        if( $conn->query($sql) == true ){
+            header('location:login.php?usercreated');
+            //echo "Registration Successfully";
+      }else{
+            echo "Password not matched";
+      }
+    }
+
+    }
+    
+
 }
 
 ?>
@@ -55,9 +78,11 @@ if (isset($_POST['submit'])) {
 
     <div class="container my-4 p-4 shadow">
         <div class="row">
+            
             <div class="col-4">
             </div>
             <div class="login col-4">
+            <h1 style="text-align: center; color:blue">Registration Form</h1>
                 <form class="form" action="user.php" method="POST">
                     <div class="mt-4">
                         <label class="form-lable">First Name</label>
@@ -87,9 +112,6 @@ if (isset($_POST['submit'])) {
                     <div class="mt-4">
                         <button class="btn btn-success" name="submit">Submit</button>
                     </div>
-                    <label>
-                        <input type="checkbox" checked="checked" name="remember" /> Remember me
-                    </label>
                 </form>
                 <div class="mt-2">
                     <h5>Already have an account? <a href="login.php">Login</a></h5>
