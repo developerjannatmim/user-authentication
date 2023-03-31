@@ -1,4 +1,5 @@
-<?php 
+<?php
+session_start(); 
 $conn = new mysqli('localhost','root','','userauthentication');
 if(!$conn){
     die("Database Connection Failed");
@@ -21,12 +22,12 @@ if(isset($_POST['user_submit'])){
     }
 
     if(!empty($user_email) && !empty($user_password)){
-        $sql = "SELECT * FROM users WHERE user_email = '$user_email' AND user_password = '$user_password'";
+        $sql = "SELECT * FROM users WHERE user_email = '$user_email' AND user_password = '$md5_user_password'";
 
         $query = $conn->query($sql);
 
         if( $query->num_rows > 0 ){
-            //echo "information matched";
+            $_SESSION['login'] = 'login successfull';
             header('location:index.php');
         }else{
             echo "information not matched";
@@ -66,12 +67,12 @@ if(isset($_POST['user_submit'])){
                 <form class="form" action="login.php" method="POST">
                     <div class="mt-4">
                         <label class="form-lable">Email</label>
-                        <input type="text" class="form-control" name="user_email" value="<?php if(isset($_POST['user_submit'])){ echo $user_email ;}?>">
+                        <input type="text" class="form-control" name="user_email" value="<?php if(isset($_POST['user_submit'])){ echo $user_email ;}?>" />
                         <?php if(isset($_POST['user_submit'])) { echo "<span class='text-danger'>" . $empty_email . "</span>"; }?>
                     </div>
                     <div class="mt-4">
                         <label class="form-lable">Password</label>
-                        <input type="password" class="form-control" name="user_password" value="<?php if(isset($_POST['user_submit'])){ echo $md5_user_password ;}?>">
+                        <input type="password" class="form-control" name="user_password" />
                         <?php if(isset($_POST['user_submit'])) { echo "<span class='text-danger'>" . $empty_password . "</span>"; }?>
                     </div>
                     <div class="mt-4">

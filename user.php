@@ -16,7 +16,7 @@ if (isset($_POST['submit'])) {
     $user_last_name = $_POST['user_last_name'];
     $user_email = $_POST['user_email'];
     $user_password = $_POST['user_password'];
-    $user_reset_password = $_POST['user_reset_password'];
+    $user_confirm_password = $_POST['user_reset_password'];
 
     $md5_user_password = md5($user_password);
 
@@ -36,12 +36,12 @@ if (isset($_POST['submit'])) {
         $empmsg_password = "Fill up this field";
     }
 
-    if(empty($user_reset_password)){
+    if(empty($user_confirm_password)){
         $empmsg_resetpassword = "Fill up this field";
     }
 
-    if( !empty($user_first_name) && !empty($user_last_name) && !empty($user_email) && !empty($user_password) && !empty($user_reset_password) ){
-      if( $user_password === $user_reset_password ){
+    if( !empty($user_first_name) && !empty($user_last_name) && !empty($user_email) && !empty($user_password) && !empty($user_confirm_password) ){
+      if( $user_password === $user_confirm_password ){
         $sql = "INSERT INTO users(user_first_name, user_last_name, user_email, user_password) VALUE('$user_first_name','$user_last_name','$user_email','$md5_user_password')";
 
         if( $conn->query($sql) == true ){
@@ -105,8 +105,8 @@ if (isset($_POST['submit'])) {
                         <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" . $empmsg_password . "</span>"; }?>
                     </div>
                     <div class="mt-4">
-                        <label class="form-lable">Reset Password</label>
-                        <input type="password" class="form-control" name="user_reset_password" value="<?php if(isset($_POST['submit'])){ echo $user_reset_password ;}?>" />
+                        <label class="form-lable">Comfirm Password</label>
+                        <input type="password" class="form-control" name="user_reset_password" value="<?php if(isset($_POST['submit'])){ echo $user_confirm_password ;}?>" />
                         <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" . $empmsg_resetpassword . "</span>"; }?>
                     </div>
                     <div class="mt-4">
@@ -114,7 +114,7 @@ if (isset($_POST['submit'])) {
                     </div>
                 </form>
                 <div class="mt-2">
-                    <h5>Already have an account? <a href="login.php">Login</a></h5>
+                    <h6>Already have an account? <a href="login.php">Login</a></h6>
                 </div>
             </div>
             <div class="col-4">
