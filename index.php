@@ -10,4 +10,4 @@ if(!empty($_SESSION['login'])){
 
 ?>
 
-<h3><a href="logout.php">logout.php</a></h3>
+<h3><a href="logout.php">Logout</a></h3>

@@ -26,13 +26,23 @@ if(isset($_POST['user_submit'])){
 
         $query = $conn->query($sql);
 
-        if( $query->num_rows > 0 ){
-            $_SESSION['login'] = 'login successfull';
-            header('location:index.php');
-        }else{
-            echo "information not matched";
-            echo $sql;
-        }
+        if (mysqli_num_rows($query) === 1) {
+			$row = mysqli_fetch_assoc($query);
+            if ($row['user_email'] === $user_email && $row['user_password'] === $md5_user_password) {
+            	$_SESSION['user_email'] = $row['user_email'];
+            	$_SESSION['user_password'] = $row['user_password'];
+            	$_SESSION['user_id'] = $row['user_id'];
+            	$_SESSION['user_name'] = $row['user_name'];
+            	header("Location: home.php");
+		        exit();
+            }else{
+				header("Location: index.php?error=Incorect User name or password");
+		        exit();
+			}
+		}else{
+			header("Location: index.php?error=Incorect User name or password");
+	        exit();
+		}
     }
 }
 
@@ -47,7 +57,8 @@ if(isset($_POST['user_submit'])){
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
 
     <title>User Authentication</title>
     <link rel="stylesheet" href="style.css" />
@@ -60,18 +71,19 @@ if(isset($_POST['user_submit'])){
             <div class="col-4">
             </div>
             <div class="login col-4">
-                <h1 style="text-align: center; color:blue">Login</h1>
+                <h1 class="main" style="text-align: center;">Login</h1>
                 <?php if (isset($_GET['usercreated'])) {
                     echo "user Created Successfully";
                 } ?>
                 <form class="form" action="login.php" method="POST">
                     <div class="mt-4">
-                        <label class="form-lable">Email</label>
-                        <input type="text" class="form-control" name="user_email" value="<?php if(isset($_POST['user_submit'])){ echo $user_email ;}?>" />
+                        <label class="form-lable one">Email</label>
+                        <input type="text" class="form-control" name="user_email"
+                            value="<?php if(isset($_POST['user_submit'])){ echo $user_email ;}?>" />
                         <?php if(isset($_POST['user_submit'])) { echo "<span class='text-danger'>" . $empty_email . "</span>"; }?>
                     </div>
                     <div class="mt-4">
-                        <label class="form-lable">Password</label>
+                        <label class="form-lable one">Password</label>
                         <input type="password" class="form-control" name="user_password" />
                         <?php if(isset($_POST['user_submit'])) { echo "<span class='text-danger'>" . $empty_password . "</span>"; }?>
                     </div>
@@ -97,7 +109,9 @@ if(isset($_POST['user_submit'])){
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
 
     <!-- Option 2: Separate Popper and Bootstrap JS -->
     <!--

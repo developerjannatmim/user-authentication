@@ -7,6 +7,7 @@ if(!$conn){
 
 $empmsg_firstname = '';
 $empmsg_lastname = '';
+$empmsg_name= '';
 $empmsg_email = '';
 $empmsg_password = '';
 $empmsg_resetpassword = '';
@@ -14,6 +15,7 @@ $empmsg_resetpassword = '';
 if (isset($_POST['submit'])) {
     $user_first_name = $_POST['user_first_name'];
     $user_last_name = $_POST['user_last_name'];
+    $user_name = $_POST['user_name'];
     $user_email = $_POST['user_email'];
     $user_password = $_POST['user_password'];
     $user_confirm_password = $_POST['user_reset_password'];
@@ -28,6 +30,10 @@ if (isset($_POST['submit'])) {
         $empmsg_lastname = "Fill up this field";
     }
 
+    if(empty($user_name)){
+        $empmsg_name = "Fill up this field";
+    }
+
     if(empty($user_email)){
         $empmsg_email = "Fill up this field";
     }
@@ -40,9 +46,9 @@ if (isset($_POST['submit'])) {
         $empmsg_resetpassword = "Fill up this field";
     }
 
-    if( !empty($user_first_name) && !empty($user_last_name) && !empty($user_email) && !empty($user_password) && !empty($user_confirm_password) ){
+    if( !empty($user_first_name) && !empty($user_last_name) && !empty($user_name) && !empty($user_email) && !empty($user_password) && !empty($user_confirm_password) ){
       if( $user_password === $user_confirm_password ){
-        $sql = "INSERT INTO users(user_first_name, user_last_name, user_email, user_password) VALUE('$user_first_name','$user_last_name','$user_email','$md5_user_password')";
+        $sql = "INSERT INTO users(user_first_name, user_last_name, user_name, user_email, user_password) VALUE('$user_first_name','$user_last_name','$user_name','$user_email','$md5_user_password')";
 
         if( $conn->query($sql) == true ){
             header('location:login.php?usercreated');
@@ -68,7 +74,8 @@ if (isset($_POST['submit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
 
     <title>User Authentication</title>
     <link rel="stylesheet" href="style.css" />
@@ -78,35 +85,48 @@ if (isset($_POST['submit'])) {
 
     <div class="container my-4 p-4 shadow">
         <div class="row">
-            
+
             <div class="col-4">
             </div>
             <div class="login col-4">
-            <h1 style="text-align: center; color:blue">Registration Form</h1>
+                <h1 class="main" style="text-align: center;">Registration Form</h1>
                 <form class="form" action="user.php" method="POST">
                     <div class="mt-4">
-                        <label class="form-lable">First Name</label>
-                        <input type="text" class="form-control" name="user_first_name" value="<?php if(isset($_POST['submit'])){ echo $user_first_name ;}?>" />
+                        <label class="form-lable one">First Name</label>
+                        <input type="text" class="form-control" name="user_first_name"
+                            value="<?php if(isset($_POST['submit'])){ echo $user_first_name ;}?>" />
                         <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" . $empmsg_firstname . "</span>"; }?>
                     </div>
                     <div class="mt-4">
-                        <label class="form-lable">Last Name</label>
-                        <input type="text" class="form-control" name="user_last_name" value="<?php if(isset($_POST['submit'])){ echo $user_last_name ;}?>" />
+                        <label class="form-lable one">Last Name</label>
+                        <input type="text" class="form-control" name="user_last_name"
+                            value="<?php if(isset($_POST['submit'])){ echo $user_last_name ;}?>" />
                         <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" . $empmsg_lastname  . "</span>"; }?>
                     </div>
+
                     <div class="mt-4">
-                        <label class="form-lable">Email</label>
-                        <input type="text" class="form-control" name="user_email" value="<?php if(isset($_POST['submit'])){ echo $user_email ;}?>" />
+                        <label class="form-lable one">User Name</label>
+                        <input type="text" class="form-control" name="user_name"
+                            value="<?php if(isset($_POST['submit'])){ echo $user_name ;}?>" />
+                        <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" . $empmsg_name  . "</span>"; }?>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="form-lable one">Email</label>
+                        <input type="text" class="form-control" name="user_email"
+                            value="<?php if(isset($_POST['submit'])){ echo $user_email ;}?>" />
                         <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" .  $empmsg_email . "</span>"; }?>
                     </div>
                     <div class="mt-4">
-                        <label class="form-lable">Password</label>
-                        <input type="password" class="form-control" name="user_password" value="<?php if(isset($_POST['submit'])){ echo $user_password ;}?>" />
+                        <label class="form-lable one">Password</label>
+                        <input type="password" class="form-control" name="user_password"
+                            value="<?php if(isset($_POST['submit'])){ echo $user_password ;}?>" />
                         <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" . $empmsg_password . "</span>"; }?>
                     </div>
                     <div class="mt-4">
-                        <label class="form-lable">Comfirm Password</label>
-                        <input type="password" class="form-control" name="user_reset_password" value="<?php if(isset($_POST['submit'])){ echo $user_confirm_password ;}?>" />
+                        <label class="form-lable one">Comfirm Password</label>
+                        <input type="password" class="form-control" name="user_reset_password"
+                            value="<?php if(isset($_POST['submit'])){ echo $user_confirm_password ;}?>" />
                         <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" . $empmsg_resetpassword . "</span>"; }?>
                     </div>
                     <div class="mt-4">
@@ -129,7 +149,9 @@ if (isset($_POST['submit'])) {
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
 
     <!-- Option 2: Separate Popper and Bootstrap JS -->
     <!--
