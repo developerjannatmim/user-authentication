@@ -60,8 +60,7 @@ if (isset($_POST['submit'])) {
     $result = mysqli_query($conn, $query);
     $present = mysqli_num_rows($result);
     if ($present > 0) {
-        $_SESSION['email_alert'] = '1';    
-        header('location:user.php');
+       $messages = "Email Already Exists";    
     } else {
 
         if (!empty($user_first_name) && !empty($user_last_name) && !empty($user_name) && !empty($user_email) && !empty($user_password) && !empty($user_confirm_password) && !empty($image)) {
@@ -105,17 +104,7 @@ if (isset($_POST['submit'])) {
     <div class="form-container my-4 p-4 shadow">
         <form class="form" action="" method="POST" enctype="multipart/form-data">
             <h3>Registration Form</h3>
-            <h5 style="color: red;">
-                <?php
-                session_start();
-                if (isset($_POST['submit'])) { 
-                if (isset($_SESSION['email_alert'])) {
-                    $message = "Email Already Exists";
-                    echo $message;
-                }
-            }
-                ?>
-            </h5>
+            <h5 style="color: red;"><?php if (isset($_POST['submit'])) {echo $messages ; }?></h5>
             <label class=" form-lable">First Name</label>
             <input type="text" class="box" name="user_first_name"
                 value="<?php if (isset($_POST['submit'])) {echo $user_first_name;} ?>" />
