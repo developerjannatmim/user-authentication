@@ -1,69 +1,88 @@
 <?php
 
-$conn = new mysqli('localhost','root','','userauthentication');
-if(!$conn){
+$conn = new mysqli('localhost', 'root', '', 'userauthentication');
+if (!$conn) {
     die("Database Connection Failed");
 }
 
 $empmsg_firstname = '';
 $empmsg_lastname = '';
-$empmsg_name= '';
+$empmsg_name = '';
 $empmsg_email = '';
 $empmsg_password = '';
 $empmsg_resetpassword = '';
+$empmsg_image = '';
 
 if (isset($_POST['submit'])) {
-    $user_first_name = $_POST['user_first_name'];
-    $user_last_name = $_POST['user_last_name'];
-    $user_name = $_POST['user_name'];
-    $user_email = $_POST['user_email'];
-    $user_password = $_POST['user_password'];
-    $user_confirm_password = $_POST['user_reset_password'];
 
+    $user_first_name = mysqli_real_escape_string($conn, $_POST['user_first_name']);
+    $user_last_name = mysqli_real_escape_string($conn, $_POST['user_last_name']);
+    $user_name = mysqli_real_escape_string($conn, $_POST['user_name']);
+    $user_email = mysqli_real_escape_string($conn, $_POST['user_email']);
+    $user_password = mysqli_real_escape_string($conn, $_POST['user_password']);
+    $user_confirm_password = mysqli_real_escape_string($conn, $_POST['user_reset_password']);
     $md5_user_password = md5($user_password);
 
-    if(empty($user_first_name)){
+    $image = $_FILES['image']['name'];
+    $image_size = $_FILES['image']['size'];
+    $image_tmp_name = $_FILES['image']['tmp_name'];
+    $image_folder = 'uploaded_img/' . $image;
+
+    if (empty($user_first_name)) {
         $empmsg_firstname = "Fill up this field";
     }
 
-    if(empty($user_last_name)){
+    if (empty($user_last_name)) {
         $empmsg_lastname = "Fill up this field";
     }
 
-    if(empty($user_name)){
+    if (empty($user_name)) {
         $empmsg_name = "Fill up this field";
     }
 
-    if(empty($user_email)){
+    if (empty($user_email)) {
         $empmsg_email = "Fill up this field";
     }
 
-    if(empty($user_password)){
+    if (empty($user_password)) {
         $empmsg_password = "Fill up this field";
     }
 
-    if(empty($user_confirm_password)){
+    if (empty($user_confirm_password)) {
         $empmsg_resetpassword = "Fill up this field";
     }
 
-    if( !empty($user_first_name) && !empty($user_last_name) && !empty($user_name) && !empty($user_email) && !empty($user_password) && !empty($user_confirm_password) ){
-      if( $user_password === $user_confirm_password ){
-        $sql = "INSERT INTO users(user_first_name, user_last_name, user_name, user_email, user_password) VALUE('$user_first_name','$user_last_name','$user_name','$user_email','$md5_user_password')";
-
-        if( $conn->query($sql) == true ){
-            header('location:login.php?usercreated');
-            //echo "Registration Successfully";
-      }else{
-            echo "Password not matched";
-      }
+    if (empty($image)) {
+        $empmsg_image = "Fill up this field";
     }
 
-    }
-    
+    $query = "SELECT * from users WHERE user_email = '$user_email'";
+    $result = mysqli_query($conn, $query);
+    $present = mysqli_num_rows($result);
+    if ($present > 0) {
+        $_SESSION['email_alert'] = '1';    
+        header('location:user.php');
+    } else {
 
+        if (!empty($user_first_name) && !empty($user_last_name) && !empty($user_name) && !empty($user_email) && !empty($user_password) && !empty($user_confirm_password) && !empty($image)) {
+            if ($user_password === $user_confirm_password) {
+                $sql = "INSERT INTO users(user_first_name, user_last_name, user_name, user_email, user_password, user_image) VALUE('$user_first_name','$user_last_name','$user_name','$user_email','$md5_user_password','$image')";
+
+                if ($conn->query($sql) == true) {
+                    move_uploaded_file($image_tmp_name, $image_folder);
+                    $message = 'registered successfully!';
+                    header('location:login.php?usercreated');
+                    //echo "Registration Successfully";
+                } else {
+                    $message = 'registeration failed!';
+                }
+            }
+        }
+    }
 }
 
 ?>
+
 
 <!doctype html>
 <html lang="en">
@@ -78,68 +97,78 @@ if (isset($_POST['submit'])) {
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
 
     <title>User Authentication</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
 
-    <div class="container my-4 p-4 shadow">
-        <div class="row">
+    <div class="form-container my-4 p-4 shadow">
+        <form class="form" action="" method="POST" enctype="multipart/form-data">
+            <h3>Registration Form</h3>
+            <h5 style="color: red;">
+                <?php
+                session_start();
+                if (isset($_POST['submit'])) { 
+                if (isset($_SESSION['email_alert'])) {
+                    $message = "Email Already Exists";
+                    echo $message;
+                }
+            }
+                ?>
+            </h5>
+            <label class=" form-lable">First Name</label>
+            <input type="text" class="box" name="user_first_name"
+                value="<?php if (isset($_POST['submit'])) {echo $user_first_name;} ?>" />
+            <?php if (isset($_POST['submit'])) {
+                echo "<span class='text-danger'>" . $empmsg_firstname . "</span>";
+            } ?>
+            <label class="form-lable one">Last Name</label>
+            <input type="text" class="box" name="user_last_name" value="<?php if (isset($_POST['submit'])) {
+                                                                            echo $user_last_name;
+                                                                        } ?>" />
+            <?php if (isset($_POST['submit'])) {
+                echo "<span class='text-danger'>" . $empmsg_lastname  . "</span>";
+            } ?>
+            <label class="form-lable">User Name</label>
+            <input type="text" class="box" name="user_name" value="<?php if (isset($_POST['submit'])) {
+                                                                        echo $user_name;
+                                                                    } ?>" />
+            <?php if (isset($_POST['submit'])) {
+                echo "<span class='text-danger'>" . $empmsg_name  . "</span>";
+            } ?>
+            <label class="form-lable">Email</label>
+            <input type="text" class="box" name="user_email" value="<?php if (isset($_POST['submit'])) {
+                                                                        echo $user_email;
+                                                                    } ?>" />
+            <?php if (isset($_POST['submit'])) {
+                echo "<span class='text-danger'>" .  $empmsg_email . "</span>";
+            } ?>
+            <label class="form-lable">Password</label>
+            <input type="password" class="box" name="user_password" value="<?php if (isset($_POST['submit'])) {
+                                                                                echo $user_password;
+                                                                            } ?>" />
+            <?php if (isset($_POST['submit'])) {
+                echo "<span class='text-danger'>" . $empmsg_password . "</span>";
+            } ?>
+            <label class="form-lable">Comfirm Password</label>
+            <input type="password" class="box" name="user_reset_password" value="<?php if (isset($_POST['submit'])) {
+                                                                                        echo $user_confirm_password;
+                                                                                    } ?>" />
+            <?php if (isset($_POST['submit'])) {
+                echo "<span class='text-danger'>" . $empmsg_resetpassword . "</span>";
+            } ?>
 
-            <div class="col-4">
-            </div>
-            <div class="login col-4">
-                <h1 class="main" style="text-align: center;">Registration Form</h1>
-                <form class="form" action="user.php" method="POST">
-                    <div class="mt-4">
-                        <label class="form-lable one">First Name</label>
-                        <input type="text" class="form-control" name="user_first_name"
-                            value="<?php if(isset($_POST['submit'])){ echo $user_first_name ;}?>" />
-                        <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" . $empmsg_firstname . "</span>"; }?>
-                    </div>
-                    <div class="mt-4">
-                        <label class="form-lable one">Last Name</label>
-                        <input type="text" class="form-control" name="user_last_name"
-                            value="<?php if(isset($_POST['submit'])){ echo $user_last_name ;}?>" />
-                        <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" . $empmsg_lastname  . "</span>"; }?>
-                    </div>
+            <label class="form-lable">Upload Image</label>
+            <input type="file" name="image" class="box" accept="image/jpg, image/jpeg, image/png" value="<?php if (isset($_POST['submit'])) {
+                                                                                                                echo $image;
+                                                                                                            } ?>" />
+            <?php if (isset($_POST['submit'])) {
+                echo "<span class='text-danger'>" . $empmsg_image . "</span>";
+            } ?>
 
-                    <div class="mt-4">
-                        <label class="form-lable one">User Name</label>
-                        <input type="text" class="form-control" name="user_name"
-                            value="<?php if(isset($_POST['submit'])){ echo $user_name ;}?>" />
-                        <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" . $empmsg_name  . "</span>"; }?>
-                    </div>
-
-                    <div class="mt-4">
-                        <label class="form-lable one">Email</label>
-                        <input type="text" class="form-control" name="user_email"
-                            value="<?php if(isset($_POST['submit'])){ echo $user_email ;}?>" />
-                        <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" .  $empmsg_email . "</span>"; }?>
-                    </div>
-                    <div class="mt-4">
-                        <label class="form-lable one">Password</label>
-                        <input type="password" class="form-control" name="user_password"
-                            value="<?php if(isset($_POST['submit'])){ echo $user_password ;}?>" />
-                        <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" . $empmsg_password . "</span>"; }?>
-                    </div>
-                    <div class="mt-4">
-                        <label class="form-lable one">Comfirm Password</label>
-                        <input type="password" class="form-control" name="user_reset_password"
-                            value="<?php if(isset($_POST['submit'])){ echo $user_confirm_password ;}?>" />
-                        <?php if(isset($_POST['submit'])) { echo "<span class='text-danger'>" . $empmsg_resetpassword . "</span>"; }?>
-                    </div>
-                    <div class="mt-4">
-                        <button class="btn btn-success" name="submit">Submit</button>
-                    </div>
-                </form>
-                <div class="mt-2">
-                    <h6>Already have an account? <a href="login.php">Login</a></h6>
-                </div>
-            </div>
-            <div class="col-4">
-            </div>
-        </div>
+            <input type="submit" name="submit" value="register now" class="btn">
+            <p>already have an account? <a href="login.php">login now</a></p>
+        </form>
     </div>
 
 
