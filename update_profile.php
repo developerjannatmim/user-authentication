@@ -1,6 +1,6 @@
 <?php
 session_start();
-$conn = new mysqli('sql206.epizy.com','epiz_33834643','LnPlh0qbAvne','epiz_33834643_userauthentication');
+$conn = new mysqli('localhost','root','','userauthentication');
 if(!$conn){
     die("Database Connection Failed");
 }
