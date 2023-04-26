@@ -77,7 +77,7 @@ if(isset($_POST['update_profile'])){
      $errorMessages[] = 'Image is too large.';
    }
    else {
-     $updateImagePath = 'uploaded_img/' . $updateImage['name'];
+     $updateImagePath = $updateImage['name'];
      move_uploaded_file($updateImage['tmp_name'], $updateImagePath);
      $fields['user_image'] = $updateImagePath;
    }
@@ -139,7 +139,7 @@ if(isset($_POST['update_profile'])){
          if($fetch['user_image'] == ''){
             echo '<img src="images/default-avatar.png">';
          }else{
-            echo '<img src="'.$fetch['user_image'].'">';
+            echo '<img src="uploaded_img/'.$fetch['user_image'].'">';
          }
          
          if (isset($errorMessages)) {
