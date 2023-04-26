@@ -13,11 +13,7 @@ if($select->num_rows > 0){
   $fetch = mysqli_fetch_assoc($select);
 }
 
-
-
 if(isset($_POST['update_profile'])){
-
-
    $fields = [];
    $errorMessages = [];
    $successMessage = '';
@@ -108,8 +104,6 @@ if(isset($_POST['update_profile'])){
  $selectResult = mysqli_query($conn, $selectSql);
  if (mysqli_num_rows($selectResult) > 0) {
    $fetch = mysqli_fetch_assoc($selectResult);
- 
-
    
 }
 
