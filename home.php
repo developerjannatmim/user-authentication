@@ -28,7 +28,7 @@ if (isset($_SESSION['user_email']) && isset($_SESSION['user_password'])) {
          if($fetch['user_image'] == ''){
             echo '<img src="images/default-avatar.png">';
          }else{
-            echo '<img src="'.$fetch['user_image'].'">';
+            echo '<img src="uploaded_img/'.$fetch['user_image'].'">';
          }
       ?>
             <h3>Hello, <?php echo $_SESSION['user_name']; ?></h3>
